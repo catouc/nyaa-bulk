@@ -20,7 +20,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .filter(|l| l.starts_with("/download"))
         .for_each(|x| { 
             let url = nyaa_base_url.join(x).expect("invalid url given");
-            download_torrent(url, x).expect("downloads work"); });
+            let file_name = x.split("download/").nth(1).expect("file_name split broke");
+            download_torrent(url, file_name).expect("downloads work");
+            }
+        );
     Ok(())
 }
 
