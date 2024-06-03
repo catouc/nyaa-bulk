@@ -4,11 +4,12 @@ use std::fs::File;
 use std::io;
 use select::document::Document;
 use select::predicate::Name;
+use url::Url;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
 
-    const NYAA: &str = "https://nyaa.si";
+    let nyaa_base_url: Url = Url::parse("https://nyaa.si")?;
 
     let response = reqwest::blocking::get(&args[1])?
         .text()?;
@@ -17,11 +18,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         .find(Name("a"))
         .filter_map(|n| n.attr("href"))
         .filter(|l| l.starts_with("/download"))
-        .for_each(|x| download_torrent(NYAA.to_string().push_str(x)?, x));
+        .for_each(|x| { 
+            let url = nyaa_base_url.join(x).expect("invalid url given");
+            download_torrent(url, x).expect("downloads work"); });
     Ok(())
 }
 
-fn download_torrent(url: &str, file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+fn download_torrent(url: Url, file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut resp = reqwest::blocking::get(url)?;
     let mut out = File::create(file_name)?;
     io::copy(&mut resp, &mut out)?;
