@@ -1,5 +1,7 @@
 use std::error::Error;
 use std::env;
+use std::fs::File;
+use std::io;
 use select::document::Document;
 use select::predicate::Name;
 
