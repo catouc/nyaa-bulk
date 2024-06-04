@@ -36,3 +36,13 @@ fn construct_file_name(relative_link: &str) -> Result<&str, Box<dyn std::error::
     Ok(file_name)
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_construct_file_name() -> Result<(), Box<dyn std::error::Error>> {
+        assert_eq!(construct_file_name("/download/some.torrent")?, "some.torrent");
+        Ok(())
+    }
+}
